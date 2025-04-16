@@ -35,14 +35,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Link } from 'react-router';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface DataTableProps<T> {
   data: T[];
   filter: string;
   columns: ColumnDef<T>[];
   linkCreate?: string;
-  showSearchInput?: boolean;
   filterComponent?: React.ReactNode;
+  isLoading?: boolean;
 }
 
 export const DataTable = <T,>({
@@ -50,11 +51,9 @@ export const DataTable = <T,>({
   filter,
   columns,
   linkCreate,
-  showSearchInput = true,
   filterComponent,
+  isLoading = false,
 }: DataTableProps<T>) => {
-  const user = JSON.parse(localStorage.getItem('admin')!);
-  const isMonitoring = user?.role_id === 'monitoring';
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -82,24 +81,16 @@ export const DataTable = <T,>({
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        {!isMonitoring && (
-          <>
-            {showSearchInput && (
-              <Input
-                placeholder={`pencarian ${filter}`}
-                value={(table.getColumn(filter)?.getFilterValue() as string) ?? ''}
-                onChange={(event) =>
-                  table.getColumn(filter)?.setFilterValue(event.target.value)
-                }
-                className="max-w-sm"
-              />
-            )}
-            {linkCreate && (
-              <Button className="ml-auto">
-                <Link to={linkCreate}>Tambah</Link>
-              </Button>
-            )}
-          </>
+        <Input
+          placeholder={`Pencarian ${filter}`}
+          value={(table.getColumn(filter)?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn(filter)?.setFilterValue(event.target.value)}
+          className="max-w-sm"
+        />
+        {linkCreate && (
+          <Button className="ml-auto">
+            <Link to={linkCreate}>Tambah</Link>
+          </Button>
         )}
         {filterComponent && <div className="ml-auto">{filterComponent}</div>}
       </div>
@@ -109,43 +100,39 @@ export const DataTable = <T,>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    style={{ width: header.getSize() }}>
+                  <TableHead key={header.id} style={{ width: header.getSize() }}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, rowIndex) => (
+                <TableRow key={rowIndex} className="border-t">
+                  {Array.from({ length: columns.length }).map((_, colIndex) => (
+                    <TableCell key={colIndex} style={{ width: columns[colIndex].size }}>
+                      <Skeleton className="h-6 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : data.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}>
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{ width: cell.column.getSize() }}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                    <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center">
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -157,11 +144,10 @@ export const DataTable = <T,>({
         <div className="flex-1 text-sm text-muted-foreground">
           <Select
             onValueChange={(value) => table.setPageSize(Number(value))}
-            defaultValue={String(table.getState().pagination.pageSize)}>
+            defaultValue={String(table.getState().pagination.pageSize)}
+          >
             <SelectTrigger className="!w-fit">
-              <SelectValue
-                placeholder={`Show ${table.getState().pagination.pageSize}`}
-              />
+              <SelectValue placeholder={`Show ${table.getState().pagination.pageSize}`} />
             </SelectTrigger>
             <SelectContent>
               {[5, 10, 20, 30, 40, 50].map((pageSize) => (
@@ -173,18 +159,10 @@ export const DataTable = <T,>({
           </Select>
         </div>
         <div className="flex items-center gap-2 mt-4">
-          <Button
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-            size="icon"
-            variant="outline">
+          <Button onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()} size="icon" variant="outline">
             <ChevronsLeft className="h-4 w-4" />
           </Button>
-          <Button
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            size="icon"
-            variant="outline">
+          <Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} size="icon" variant="outline">
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="flex items-center gap-2">
@@ -199,18 +177,10 @@ export const DataTable = <T,>({
             />
             <span>of {table.getPageCount()}</span>
           </span>
-          <Button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            size="icon"
-            variant="outline">
+          <Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()} size="icon" variant="outline">
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-            size="icon"
-            variant="outline">
+          <Button onClick={() => table.setPageIndex(table.getPageCount() - 1)} disabled={!table.getCanNextPage()} size="icon" variant="outline">
             <ChevronsRight className="h-4 w-4" />
           </Button>
         </div>

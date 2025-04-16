@@ -3,7 +3,6 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Outlet } from "react-router";
-// import LogoutButton from "../LogoutButton";
 
 const DashboardLayoutContainer = () => {
     return (
@@ -18,7 +17,6 @@ const DashboardLayoutContainer = () => {
 
                     {/* <div className="flex items-center gap-6"> */}
                     {/* <ModeToggle /> */}
-                    {/* <LogoutButton /> */}
                     {/* </div> */}
                 </header>
                 <Outlet />

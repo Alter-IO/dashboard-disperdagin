@@ -6,7 +6,7 @@ import { MoreHorizontal } from "lucide-react";
 import { useNavigate } from "react-router";
 import ResetPasswordDialog from "./container/reset-password/ResetPassword";
 
-export const columns = (): ColumnDef<IUser>[] => [
+export const columns = (setOpen: (open: boolean) => void, setSelectedUsername: (username: string | null) => void): ColumnDef<IUser>[] => [
     {
         accessorKey: 'id',
         header: 'Id',
@@ -16,16 +16,16 @@ export const columns = (): ColumnDef<IUser>[] => [
         },
     },
     {
-        id: 'role',
-        accessorKey: 'role_id',
-        header: 'Role',
-        size: 80,
-    },
-    {
         id: 'username',
         accessorKey: 'username',
         header: 'Username',
         size: 280,
+    },
+    {
+        id: 'role',
+        accessorKey: 'role_id',
+        header: 'Role',
+        size: 80,
     },
     {
         id: "actions",
@@ -48,7 +48,7 @@ export const columns = (): ColumnDef<IUser>[] => [
                         <ResetPasswordDialog id={data.id} />
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => navigate(`/user-management/${data.id}/edit`)}>Sunting</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { console.log({ data }) }}>Hapus</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setSelectedUsername(data.username); setOpen(true) }}>Hapus</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             );

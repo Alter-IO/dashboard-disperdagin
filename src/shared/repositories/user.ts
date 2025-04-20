@@ -69,6 +69,28 @@ export async function ResetPassword(
     throw new Error(error.data);
   }
 
+  const data = (await response.json()) as IFetchGeneralSuccessResponse<string>;
+
+  return { success: true, data: data };
+}
+
+export async function DeleteUser(
+  username: string
+): Promise<IFetchGeneralResponse<IFetchGeneralSuccessResponse<string>>> {
+  const token = JSON.parse(localStorage.getItem('access_token')!);
+  const response = await fetch(endpoint + `/v1/users/${username}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (response.status != 200) {
+    const error = await errorHandling(response);
+    throw new Error(error.data);
+  }
+
   const data = await response.json();
 
   return { success: true, data: data };

@@ -1,24 +1,12 @@
 import * as React from "react"
 import {
-  IconCamera,
-  IconChartBar,
+  IconChartCandle,
   IconDashboard,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconFolder,
-  IconHelp,
-  IconInnerShadowTop,
   IconLayoutDashboard,
-  IconListDetails,
-  IconReport,
-  IconSearch,
   IconSettings,
   IconUsers,
 } from "@tabler/icons-react"
 
-import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
@@ -35,7 +23,6 @@ import {
 const data = {
   user: {
     name: "shadcn",
-    email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
@@ -45,7 +32,17 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "User",
+      title: "Tipe Komoditas",
+      url: "/commodity-type",
+      icon: IconChartCandle,
+    },
+    {
+      title: "Komoditas",
+      url: "/commodity",
+      icon: IconChartCandle,
+    },
+    {
+      title: "Pengguna",
       url: "/user-management",
       icon: IconUsers,
     },

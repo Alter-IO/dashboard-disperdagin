@@ -6,6 +6,9 @@ import DashboardContainer from "./dashboard/Dashboard";
 import ProtectedRoute from "@/shared/view/ProtectedRoute";
 import UserManagementContainer from "./user-management/UserManagement";
 import { UserCreateContainer } from "./user-management/container/create/UserCreate";
+import CommodityTypesContainer from "./commodity-type/CommodityTypes";
+import { CommodityTypeCreateContainer } from "./commodity-type/container/create/CommodityTypeCreate";
+import { CommodityTypeEditContainer } from "./commodity-type/container/edit/CommodityTypeEdit";
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +39,32 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['superadmin']}>
             <UserCreateContainer />
+          </ProtectedRoute>
+        ),
+      },
+
+      // Commodity Type Routes
+      {
+        path: '/commodity-type',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <CommodityTypesContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/commodity-type/create',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <CommodityTypeCreateContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/commodity-type/:id/edit',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <CommodityTypeEditContainer />
           </ProtectedRoute>
         ),
       },

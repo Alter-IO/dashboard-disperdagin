@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { IUser } from "@/shared/models/user";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ICommodityType } from "@/shared/models/commodity-type";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { useNavigate } from "react-router";
-import ResetPasswordDialog from "./container/reset-password/ResetPassword";
 
-export const columns = (setOpen: (open: boolean) => void, setSelectedUsername: (username: string | null) => void): ColumnDef<IUser>[] => [
+export const columns = (setOpen: (open: boolean) => void, setSelectedId: (id: string | null) => void): ColumnDef<ICommodityType>[] => [
     {
         accessorKey: 'id',
         header: 'Id',
@@ -16,15 +15,15 @@ export const columns = (setOpen: (open: boolean) => void, setSelectedUsername: (
         },
     },
     {
-        id: 'username',
-        accessorKey: 'username',
-        header: 'Username',
+        id: 'description',
+        accessorKey: 'description',
+        header: 'Deskripsi',
         size: 280,
     },
     {
-        id: 'role',
-        accessorKey: 'role_id',
-        header: 'Role',
+        id: 'author',
+        accessorKey: 'author',
+        header: 'Pembuat',
         size: 80,
     },
     {
@@ -45,10 +44,8 @@ export const columns = (setOpen: (open: boolean) => void, setSelectedUsername: (
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <ResetPasswordDialog id={data.id} />
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => navigate(`/user-management/${data.id}/edit`)}>Sunting</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setSelectedUsername(data.username); setOpen(true) }}>Hapus</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate(`/commodity-type/${data.id}/edit`)}>Sunting</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setSelectedId(data.id); setOpen(true) }}>Hapus</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             );

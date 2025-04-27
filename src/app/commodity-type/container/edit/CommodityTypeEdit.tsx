@@ -69,7 +69,7 @@ export const CommodityTypeEditContainer = () => {
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <div className="grid grid-cols-[150px_1fr] gap-x-4 gap-y-2 items-center">
-                            <FormLabel>Dekspripsi</FormLabel>
+                            <FormLabel>Deskripsi</FormLabel>
                             <FormField
                                 control={form.control}
                                 name="description"

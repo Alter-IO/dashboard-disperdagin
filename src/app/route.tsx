@@ -9,6 +9,10 @@ import { UserCreateContainer } from "./user-management/container/create/UserCrea
 import CommodityTypesContainer from "./commodity-type/CommodityTypes";
 import { CommodityTypeCreateContainer } from "./commodity-type/container/create/CommodityTypeCreate";
 import { CommodityTypeEditContainer } from "./commodity-type/container/edit/CommodityTypeEdit";
+import CommodityContainer from "./commodity/Commodity";
+import { CommodityCreateContainer } from "./commodity/container/create/CommodityCreate";
+import { CommodityDetailContainer } from "./commodity/container/detail/CommodityDetail";
+import { CommodityEditContainer } from "./commodity/container/edit/CommodityEdit";
 
 export const router = createBrowserRouter([
   {
@@ -65,6 +69,40 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
             <CommodityTypeEditContainer />
+          </ProtectedRoute>
+        ),
+      },
+
+      // Commodity Routes
+      {
+        path: '/commodity',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <CommodityContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/commodity/:id/detail',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <CommodityDetailContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/commodity/:id/edit',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <CommodityEditContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/commodity/create',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <CommodityCreateContainer />
           </ProtectedRoute>
         ),
       },

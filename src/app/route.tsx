@@ -13,6 +13,7 @@ import CommodityContainer from "./commodity/Commodity";
 import { CommodityCreateContainer } from "./commodity/container/create/CommodityCreate";
 import { CommodityDetailContainer } from "./commodity/container/detail/CommodityDetail";
 import { CommodityEditContainer } from "./commodity/container/edit/CommodityEdit";
+import EmployeeContainer from "./employee/Employee";
 
 export const router = createBrowserRouter([
   {
@@ -103,6 +104,16 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
             <CommodityCreateContainer />
+          </ProtectedRoute>
+        ),
+      },
+
+      // Employee Routes
+      {
+        path: '/employee',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <EmployeeContainer />
           </ProtectedRoute>
         ),
       },

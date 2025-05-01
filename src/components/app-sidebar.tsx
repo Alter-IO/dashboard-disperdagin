@@ -42,6 +42,11 @@ const data = {
       icon: IconChartCandle,
     },
     {
+      title: "Pegawai",
+      url: "/employee",
+      icon: IconUsers,
+    },
+    {
       title: "Pengguna",
       url: "/user-management",
       icon: IconUsers,

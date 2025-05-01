@@ -87,12 +87,14 @@ export const DataTable = <T,>({
           onChange={(event) => table.getColumn(filter)?.setFilterValue(event.target.value)}
           className="max-w-sm"
         />
-        {linkCreate && (
-          <Button className="ml-auto">
-            <Link to={linkCreate}>Tambah</Link>
-          </Button>
-        )}
-        {filterComponent && <div className="ml-auto">{filterComponent}</div>}
+        <div className="ml-auto flex items-center gap-2">
+          {filterComponent}
+          {linkCreate && (
+            <Button>
+              <Link to={linkCreate}>Tambah</Link>
+            </Button>
+          )}
+        </div>
       </div>
       <div className="rounded-md border overflow-x-auto">
         <Table className="w-full">

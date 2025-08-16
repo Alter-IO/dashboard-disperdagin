@@ -82,7 +82,8 @@ export const DataTable = <T,>({
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder={`Pencarian ${filter}`}
+          placeholder={`Pencarian . . .`}
+          // placeholder={`Pencarian ${filter}`}
           value={(table.getColumn(filter)?.getFilterValue() as string) ?? ""}
           onChange={(event) => table.getColumn(filter)?.setFilterValue(event.target.value)}
           className="max-w-sm"

@@ -14,6 +14,12 @@ import { CommodityCreateContainer } from "./commodity/container/create/Commodity
 import { CommodityDetailContainer } from "./commodity/container/detail/CommodityDetail";
 import { CommodityEditContainer } from "./commodity/container/edit/CommodityEdit";
 import EmployeeContainer from "./employee/Employee";
+import KecamatanContainer from "./kecamatan/Kecamatan";
+import { KecamatanCreateContainer } from "./kecamatan/container/create/KecamatanCreate";
+import { KecamatanEditContainer } from "./kecamatan/container/edit/KecamatanEdit";
+import KelurahanContainer from "./kelurahan/Kelurahan";
+import { KelurahanCreateContainer } from "./kelurahan/container/create/KelurahanCreate";
+import { KelurahanEditContainer } from "./kelurahan/container/edit/KelurahanEdit";
 
 export const router = createBrowserRouter([
   {
@@ -114,6 +120,56 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
             <EmployeeContainer />
+          </ProtectedRoute>
+        ),
+      },
+      // Kecamatan Routes
+      {
+        path: '/kecamatan',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <KecamatanContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/kecamatan/create',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <KecamatanCreateContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/kecamatan/:id/edit',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <KecamatanEditContainer />
+          </ProtectedRoute>
+        ),
+      },
+      // Kelurahan Routes
+      {
+        path: '/kelurahan',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <KelurahanContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/kelurahan/create',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <KelurahanCreateContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/kelurahan/:id/edit',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <KelurahanEditContainer />
           </ProtectedRoute>
         ),
       },

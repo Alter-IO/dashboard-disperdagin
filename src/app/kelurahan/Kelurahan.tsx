@@ -5,22 +5,22 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { columns } from "./_column";
 import { DeleteConfirmationModal } from "@/shared/view/DeleteConfirmationModal";
-import { useDeleteCommodity } from "./usecase/useDeleteCommodity";
-import { GetCommodities } from "@/shared/repositories/commodity";
+import { useDeleteKelurahan } from "./usecase/useDeleteKelurahan";
+import { GetKelurahans } from "@/shared/repositories/kelurahan";
 
-const CommodityContainer = () => {
+const KelurahanContainer = () => {
     const [open, setOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);
 
-    const { data: commodityTypes, isLoading, isError, error, refetch } = useQuery({
-        queryKey: ['commodities'],
-        queryFn: GetCommodities,
+    const { data: kelurahans, isLoading, isError, error, refetch } = useQuery({
+        queryKey: ['kelurahans'],
+        queryFn: GetKelurahans,
     })
 
-    const { mutate: deleteCommodityType } = useDeleteCommodity();
+    const { mutate: deleteKelurahan } = useDeleteKelurahan();
     const handleDelete = async () => {
         if (!selectedId) return;
-        deleteCommodityType(selectedId);
+        deleteKelurahan(selectedId);
     }
 
     if (isError) {
@@ -30,20 +30,25 @@ const CommodityContainer = () => {
     return (
         <Card className="m-4">
             <CardHeader>
-                <CardTitle>Daftar Komodity</CardTitle>
+                <CardTitle>Daftar Kelurahan</CardTitle>
             </CardHeader>
             <CardContent>
                 <DataTable
                     columns={columns(setOpen, setSelectedId)}
-                    data={commodityTypes?.data ?? []}
+                    data={kelurahans?.data ?? []}
                     filter="name"
-                    linkCreate="/commodity/create"
+                    linkCreate="/kelurahan/create"
                     isLoading={isLoading}
                 />
-                <DeleteConfirmationModal open={open} onOpenChange={setOpen} onConfirm={handleDelete} msg={`komoditas ini`} />
+                <DeleteConfirmationModal 
+                    open={open} 
+                    onOpenChange={setOpen} 
+                    onConfirm={handleDelete} 
+                    msg={`kelurahan dengan id ${selectedId}`} 
+                />
             </CardContent>
         </Card>
     )
 }
 
-export default CommodityContainer;
+export default KelurahanContainer;

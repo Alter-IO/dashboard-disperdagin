@@ -5,6 +5,8 @@ import {
   IconLayoutDashboard,
   IconSettings,
   IconUsers,
+  IconMapPin,
+  IconChevronRight
 } from "@tabler/icons-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -32,14 +34,36 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Tipe Komoditas",
-      url: "/commodity-type",
+      title: "Komoditas",
       icon: IconChartCandle,
+      items: [
+        {
+          title: "Tipe Komoditas",
+          url: "/commodity-type",
+          icon: IconChevronRight,
+        },
+        {
+          title: "Daftar Komoditas",
+          url: "/commodity",
+          icon: IconChevronRight,
+        },
+      ]
     },
     {
-      title: "Komoditas",
-      url: "/commodity",
-      icon: IconChartCandle,
+      title: "Wilayah",
+      icon: IconMapPin,
+      items: [
+        {
+          title: "Kecamatan",
+          icon: IconChevronRight,
+          url: "/kecamatan",
+        },
+        {
+          title: "Kelurahan", 
+          icon: IconChevronRight,
+          url: "/kelurahan",
+        },
+      ],
     },
     {
       title: "Pegawai",

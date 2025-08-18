@@ -20,6 +20,16 @@ import { KecamatanEditContainer } from "./kecamatan/container/edit/KecamatanEdit
 import KelurahanContainer from "./kelurahan/Kelurahan";
 import { KelurahanCreateContainer } from "./kelurahan/container/create/KelurahanCreate";
 import { KelurahanEditContainer } from "./kelurahan/container/edit/KelurahanEdit";
+import PhotoCategoryContainer from "./photo-category/PhotoCategory";
+import { PhotoCategoryCreateContainer } from "./photo-category/container/create/PhotoCategoryCreate";
+import { PhotoCategoryEditContainer } from "./photo-category/container/edit/PhotoCategoryEdit";
+import PhotoContainer from "./photo/Photo";
+import VideoContainer from "./video/Video";
+import { VideoCreateContainer } from "./video/container/create/VideoCreate";
+import { VideoDetailContainer } from "./video/container/detail/VideoDetail";
+import { PhotoCreateContainer } from "./photo/container/create/PhotoCreate";
+import { PhotoDetailContainer } from "./photo/container/detail/PhotoDetail";
+import { PhotoEditContainer } from "./photo/container/edit/PhotoEdit";
 
 export const router = createBrowserRouter([
   {
@@ -173,6 +183,99 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      // Photo Category Routes
+      {
+        path: '/photo-category',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <PhotoCategoryContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/photo-category/create',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <PhotoCategoryCreateContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/photo-category/:id/edit',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <PhotoCategoryEditContainer />
+          </ProtectedRoute>
+        ),
+      },
+
+      // Photo Routes
+      {
+        path: '/photo',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <PhotoContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/photo/create',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <PhotoCreateContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/photo/:id/detail',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <PhotoDetailContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/photo/:id/edit',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <PhotoEditContainer />
+          </ProtectedRoute>
+        ),
+      },
+
+      // Video Routes
+      {
+        path: '/video',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <VideoContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/video/create',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <VideoCreateContainer />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/video/:id/detail',
+        element: (
+          <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+            <VideoDetailContainer />
+          </ProtectedRoute>
+        ),
+      },
+      // {
+      //   path: '/video/:id/edit',
+      //   element: (
+      //     <ProtectedRoute allowedRoles={['superadmin', "admin"]}>
+      //       <VideoEditContainer />
+      //     </ProtectedRoute>
+      //   ),
+      // },
     ]
   },
   {

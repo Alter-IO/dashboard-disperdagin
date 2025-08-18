@@ -6,7 +6,11 @@ import {
   IconSettings,
   IconUsers,
   IconMapPin,
-  IconChevronRight
+  IconChevronRight,
+  IconCategory,
+  IconPhoto,
+  IconVideo,
+  IconCamera
 } from "@tabler/icons-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -62,6 +66,27 @@ const data = {
           title: "Kelurahan", 
           icon: IconChevronRight,
           url: "/kelurahan",
+        },
+      ],
+    },
+    {
+      title: "Galeri", // Parent menu untuk galeri
+      icon: IconPhoto,
+      items: [
+        {
+          title: "Kategori Foto",
+          icon: IconCategory,
+          url: "/photo-category",
+        },
+        {
+          title: "Foto",
+          icon: IconCamera,
+          url: "/photo",
+        },
+        {
+          title: "Video",
+          icon: IconVideo,
+          url: "/video",
         },
       ],
     },

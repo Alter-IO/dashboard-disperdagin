@@ -2,14 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { GetCommodity } from "@/shared/repositories/commodity";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { LoadingSpinner } from "@/shared/view/LoadingSpinner";
 import { ErrorBoundary } from "@/shared/view/ErrorBoundary";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { FormatIDR } from "@/shared/usecases/formatter";
+import { Button } from "@/components/ui/button";
 
 export const CommodityDetailContainer = () => {
+    const navigate = useNavigate();
     const { id } = useParams();
 
     const {
@@ -54,6 +56,16 @@ export const CommodityDetailContainer = () => {
 
                     <Label>Tanggal Publikasi</Label>
                     <Input value={format(commodity.data.publish_date, "dd-MM-yyyy") || '-'} readOnly />
+                </div>
+                
+                <div className="flex justify-end mt-4">
+                    <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => navigate('/photo')}
+                    >
+                        Kembali
+                    </Button>
                 </div>
             </CardContent>
         </Card>

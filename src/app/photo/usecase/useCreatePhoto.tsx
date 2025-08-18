@@ -1,4 +1,3 @@
-import { IPostPutPhoto } from "@/shared/models/photo";
 import { CreatePhoto } from "@/shared/repositories/photo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
@@ -9,7 +8,7 @@ export const useCreatePhoto = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (payload: IPostPutPhoto) =>
+        mutationFn: async (payload: FormData) =>
             CreatePhoto(payload),
         onSuccess: (resp) => {
             toast.success(resp.data.message);

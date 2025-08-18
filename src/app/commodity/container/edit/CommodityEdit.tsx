@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod"
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { LoadingSpinner } from "@/shared/view/LoadingSpinner";
 import { ErrorBoundary } from "@/shared/view/ErrorBoundary";
@@ -50,7 +50,8 @@ export const FormSchema = z.object({
 });
 
 export const CommodityEditContainer = () => {
-    const { id } = useParams();
+    const { id } = useParams();    
+    const navigate = useNavigate();
 
     const admin = JSON.parse(localStorage.getItem('admin')!);
     const { mutate: updateCommodity, isPending } = useEditCommodity(id!);
@@ -253,9 +254,16 @@ export const CommodityEditContainer = () => {
                                 )}
                             />
                         </div>
-                        <div className="flex justify-end">
+                        <div className="flex justify-end gap-2">
+                            <Button 
+                                type="button" 
+                                variant="outline" 
+                                onClick={() => navigate('/commodity')}
+                            >
+                                Kembali
+                            </Button>
                             <Button type="submit" disabled={isPending}>
-                                {isPending ? 'Sedang Menambahkan' : 'Tambah'}
+                                {isPending ? 'Sedang Mengupdate' : 'Update'}
                             </Button>
                         </div>
                     </form>

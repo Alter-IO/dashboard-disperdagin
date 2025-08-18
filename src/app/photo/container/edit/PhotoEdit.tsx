@@ -7,15 +7,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod"
-import { IPostPutPhoto } from "@/shared/models/photo";
 import { GetPhoto } from "@/shared/repositories/photo";
 import { GetPhotoCategories } from "@/shared/repositories/photo-category";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { LoadingSpinner } from "@/shared/view/LoadingSpinner";
 import { ErrorBoundary } from "@/shared/view/ErrorBoundary";
 import { useEditPhoto } from "../../usecase/useEditPhoto";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Upload, X, Image as ImageIcon } from "lucide-react";
+
+const endpoint = import.meta.env.VITE_BACKEND_URL;
 
 const FormSchema = z.object({
     category_id: z.string({
@@ -24,9 +26,14 @@ const FormSchema = z.object({
     title: z.string({
         required_error: "Judul wajib di isi"
     }).min(3, "Judul minimal 3 karakter"),
-    file_url: z.string({
-        required_error: "File foto wajib di isi"
-    }).url("Format file harus berupa URL yang valid"),
+    file: z.instanceof(File).optional().refine((file) => {
+        if (!file) return true; // Optional file
+        return file.size <= 5 * 1024 * 1024; // 5MB
+    }, "Ukuran file maksimal 5MB").refine((file) => {
+        if (!file) return true; // Optional file
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        return allowedTypes.includes(file.type);
+    }, "Format file harus berupa JPEG, PNG, atau WebP"),
     description: z.string({
         required_error: "Deskripsi wajib di isi"
     }).min(10, "Deskripsi minimal 10 karakter"),
@@ -34,9 +41,13 @@ const FormSchema = z.object({
 
 export const PhotoEditContainer = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const admin = JSON.parse(localStorage.getItem('admin')!);
     const { mutate: updatePhoto, isPending } = useEditPhoto(id!);
     const [previewUrl, setPreviewUrl] = useState<string>("");
+    const [isDragging, setIsDragging] = useState(false);
+    const [currentImageUrl, setCurrentImageUrl] = useState<string>("");
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const { data: photoCategories, isPending: isPendingCategories } = useQuery({
         queryKey: ['photo-categories'],
@@ -59,38 +70,87 @@ export const PhotoEditContainer = () => {
         values: {
             category_id: photo?.data.category_id || "",
             title: photo?.data.title || "",
-            file_url: photo?.data.file_url || "",
             description: photo?.data.description || "",
         }
     })
 
-    const watchFile = form.watch("file_url");
+    const watchFile = form.watch("file");
 
-    // Update preview when file URL changes
-    useEffect(() => {
-        if (watchFile && watchFile.startsWith('http')) {
-            setPreviewUrl(watchFile);
-        } else {
-            setPreviewUrl("");
-        }
-    }, [watchFile]);
-
-    // Set initial preview when photo data loads
+    // Set initial image URL when photo data loads
     useEffect(() => {
         if (photo?.data.file_url) {
-            setPreviewUrl(photo.data.file_url);
+            const fullImageUrl = `${endpoint}${photo.data.file_url}`;
+            setCurrentImageUrl(fullImageUrl);
+            setPreviewUrl(fullImageUrl);
         }
     }, [photo]);
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
-        const payload: IPostPutPhoto = {
-            category_id: data.category_id,
-            title: data.title,
-            file_url: data.file_url,
-            description: data.description,
-            author: admin.username,
+    // Update preview when file changes
+    useEffect(() => {
+        if (watchFile) {
+            const url = URL.createObjectURL(watchFile);
+            setPreviewUrl(url);
+            
+            // Cleanup previous URL
+            return () => URL.revokeObjectURL(url);
+        } else if (currentImageUrl) {
+            setPreviewUrl(currentImageUrl);
+        } else {
+            setPreviewUrl("");
         }
-        updatePhoto(payload)
+    }, [watchFile, currentImageUrl]);
+
+    const handleFileSelect = (file: File) => {
+        form.setValue("file", file);
+        form.clearErrors("file");
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setIsDragging(false);
+        
+        const files = e.dataTransfer.files;
+        if (files && files[0]) {
+            handleFileSelect(files[0]);
+        }
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setIsDragging(false);
+    };
+
+    const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files && files[0]) {
+            handleFileSelect(files[0]);
+        }
+    };
+
+    const removeFile = () => {
+        form.setValue("file", undefined);
+        setPreviewUrl(currentImageUrl || "");
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    };
+
+    function onSubmit(data: z.infer<typeof FormSchema>) {
+        const formData = new FormData();
+        formData.append('category_id', data.category_id);
+        formData.append('title', data.title);
+        formData.append('description', data.description);
+        formData.append('author', admin.username);
+        if (data.file) {
+            formData.append('file', data.file);
+        }
+            
+        updatePhoto(formData as any);
     }
 
     if (isPendingPhoto) {
@@ -163,45 +223,112 @@ export const PhotoEditContainer = () => {
                                 )}
                             />
 
-                            <FormLabel className="mt-2 text-sm">URL File</FormLabel>
+                            <FormLabel className="mt-2 text-sm">File Foto</FormLabel>
                             <div className="max-w-[600px] w-full space-y-3">
                                 <FormField
                                     control={form.control}
-                                    name="file_url"
-                                    render={({ field }) => (
-                                        <FormItem className="w-full gap-1">
+                                    name="file"
+                                    render={({ field: { onChange, value, ...field } }) => (
+                                        <FormItem className="w-full">
                                             <FormControl>
-                                                <Input 
-                                                    {...field} 
-                                                    placeholder="https://example.com/photo.jpg"
-                                                    onChange={(e) => {
-                                                        field.onChange(e);
-                                                        setPreviewUrl(e.target.value);
-                                                    }}
-                                                />
+                                                <div className="space-y-4">
+                                                    {/* File Upload Area */}
+                                                    <div
+                                                        className={`
+                                                            border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
+                                                            ${isDragging 
+                                                                ? 'border-primary bg-primary/5' 
+                                                                : 'border-gray-300 hover:border-primary/50'
+                                                            }
+                                                        `}
+                                                        onDrop={handleDrop}
+                                                        onDragOver={handleDragOver}
+                                                        onDragLeave={handleDragLeave}
+                                                        onClick={() => fileInputRef.current?.click()}
+                                                    >
+                                                        <input
+                                                            {...field}
+                                                            ref={fileInputRef}
+                                                            type="file"
+                                                            className="hidden"
+                                                            accept="image/jpeg,image/jpg,image/png,image/webp"
+                                                            onChange={handleFileInputChange}
+                                                        />
+                                                        
+                                                        {!previewUrl ? (
+                                                            <div className="space-y-2">
+                                                                <Upload className="mx-auto h-8 w-8 text-gray-400" />
+                                                                <div className="text-sm text-gray-600">
+                                                                    <span className="font-medium text-primary">Klik untuk upload</span> atau drag & drop
+                                                                </div>
+                                                                <div className="text-xs text-gray-500">
+                                                                    PNG, JPG, JPEG, WebP hingga 5MB
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="relative">
+                                                                <img 
+                                                                    src={previewUrl} 
+                                                                    alt="Preview"
+                                                                    className="max-w-full max-h-64 mx-auto rounded-md"
+                                                                    onError={(e) => {
+                                                                        const target = e.target as HTMLImageElement;
+                                                                        target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNTAgNzVDMTU4LjI4NCA3NSAxNjUgODEuNzE2IDE2NSA5MEM2NSA5OC4yODQgMTU4LjI4NCAxMDUgMTUwIDEwNUMxNDEuNzE2IDEwNSAxMzUgOTguMjg0IDEzNSA5MEMxMzUgODEuNzE2IDE0MS43MTYgNzUgMTUwIDc1WiIgZmlsbD0iIzk0OThBNCIvPgo8cGF0aCBkPSJNMjAwIDEyNUg5OUwxMjUgOTVMMTUwIDExNUwxNzUgOTVMMjAwIDEyNVoiIGZpbGw9IiM5NDk4QTQiLz4KPHRLEHT+eD0iMTUwIiB5PSIxNDAiIGZpbGw9IiM5NDk4QTQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+R2FnYWwgbWVtdWF0IGdhbWJhcjwvdGV4dD4KPC9zdmc+';
+                                                                    }}
+                                                                />
+                                                                {watchFile && (
+                                                                    <Button
+                                                                        type="button"
+                                                                        variant="destructive"
+                                                                        size="sm"
+                                                                        className="absolute top-2 right-2"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            removeFile();
+                                                                        }}
+                                                                    >
+                                                                        <X className="h-4 w-4" />
+                                                                    </Button>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* File Info */}
+                                                    {watchFile && (
+                                                        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-md">
+                                                            <ImageIcon className="h-5 w-5 text-gray-500" />
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-sm font-medium text-gray-900 truncate">
+                                                                    {watchFile.name}
+                                                                </p>
+                                                                <p className="text-xs text-gray-500">
+                                                                    {(watchFile.size / 1024 / 1024).toFixed(2)} MB
+                                                                </p>
+                                                            </div>
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={removeFile}
+                                                            >
+                                                                <X className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Current Image Info */}
+                                                    {!watchFile && currentImageUrl && (
+                                                        <div className="text-xs text-gray-500 text-center">
+                                                            Gambar saat ini. Upload file baru untuk menggantinya.
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-                                {previewUrl && (
-                                    <div className="border rounded-lg p-3 bg-gray-50">
-                                        <p className="text-sm text-gray-600 mb-2">Preview:</p>
-                                        <img 
-                                            src={previewUrl} 
-                                            alt="Preview"
-                                            className="max-w-xs h-auto rounded-md border"
-                                            onError={(e) => {
-                                                const target = e.target as HTMLImageElement;
-                                                target.style.display = 'none';
-                                            }}
-                                            onLoad={(e) => {
-                                                const target = e.target as HTMLImageElement;
-                                                target.style.display = 'block';
-                                            }}
-                                        />
-                                    </div>
-                                )}
                             </div>
 
                             <FormLabel className="mt-2 text-sm">Deskripsi</FormLabel>
@@ -218,7 +345,14 @@ export const PhotoEditContainer = () => {
                                 )}
                             />
                         </div>
-                        <div className="flex justify-end">
+                        <div className="flex justify-end gap-2">
+                            <Button 
+                                type="button" 
+                                variant="outline" 
+                                onClick={() => navigate('/photo')}
+                            >
+                                Kembali
+                            </Button>
                             <Button type="submit" disabled={isPending}>
                                 {isPending ? 'Sedang Mengupdate' : 'Update'}
                             </Button>

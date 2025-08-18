@@ -1,4 +1,4 @@
-import { IPhoto, IPostPutPhoto } from '../models/photo';
+import { IPhoto } from '../models/photo';
 import {
   IFetchGeneralResponse,
   IFetchGeneralSuccessResponse,
@@ -47,16 +47,16 @@ export async function GetPhoto(
   return { success: true, data: data.data };
 }
 
+// Updated CreatePhoto function to handle FormData
 export async function CreatePhoto(
-  payload: IPostPutPhoto
+  payload: FormData
 ): Promise<IFetchGeneralResponse<IFetchGeneralSuccessResponse<string>>> {
   const token = JSON.parse(localStorage.getItem('access_token')!);
   const response = await fetch(endpoint + '/v1/photos', {
     method: 'POST',
-    body: JSON.stringify(payload),
+    body: payload,
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
     },
   });
 
@@ -69,17 +69,20 @@ export async function CreatePhoto(
   return { success: true, data: data };
 }
 
+// Updated UpdatePhoto function to handle FormData only
 export async function UpdatePhoto(
-  payload: IPostPutPhoto,
+  payload: FormData,
   id: string
 ): Promise<IFetchGeneralResponse<IFetchGeneralSuccessResponse<string>>> {
   const token = JSON.parse(localStorage.getItem('access_token')!);
+  for(const [key, value] of payload.entries()) {
+    console.log(`${key}: ${value}`);
+  }
   const response = await fetch(endpoint + `/v1/photos/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(payload),
+    body: payload,
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
     },
   });
 

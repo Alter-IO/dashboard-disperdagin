@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { FormatIDR } from "@/shared/usecases/formatter";
+import { useNavigate } from "react-router";
 
 export const FormSchema = z.object({
     commodity_type_id: z.string({
@@ -44,8 +45,8 @@ export const FormSchema = z.object({
     }).min(3, "Deskripsi minimal 3 karakter"),
     author: z.string().optional(),
 });
-
 export const CommodityCreateContainer = () => {
+    const navigate = useNavigate();
     const admin = JSON.parse(localStorage.getItem('admin')!);
     const { mutate: createCommodity, isPending } = useCreateCommodity();
 
@@ -229,9 +230,16 @@ export const CommodityCreateContainer = () => {
                                 )}
                             />
                         </div>
-                        <div className="flex justify-end">
+                        <div className="flex justify-end gap-2">
+                            <Button 
+                                type="button" 
+                                variant="outline" 
+                                onClick={() => navigate('/commodity')}
+                            >
+                                Kembali
+                            </Button>
                             <Button type="submit" disabled={isPending}>
-                                {isPending ? 'Sedang Menambahkan' : 'Tambah'}
+                                {isPending ? 'Sedang Mengupdate' : 'Update'}
                             </Button>
                         </div>
                     </form>

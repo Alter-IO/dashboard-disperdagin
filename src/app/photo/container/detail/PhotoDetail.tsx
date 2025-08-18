@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useNavigate } from "react-router";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import { ExternalLink, Download } from "lucide-react";
 const endpoint = import.meta.env.VITE_BACKEND_URL;
 
 export const PhotoDetailContainer = () => {
+    const navigate = useNavigate();
     const { id } = useParams();
 
     const {
@@ -104,6 +106,17 @@ export const PhotoDetailContainer = () => {
 
                     <Label>Tanggal Dibuat</Label>
                     <Input value={new Date(photo.data.created_at).toLocaleDateString('id-ID') || '-'} readOnly />
+
+                    
+                </div>
+                <div className="flex justify-end mt-4">
+                    <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => navigate('/photo')}
+                    >
+                        Kembali
+                    </Button>
                 </div>
             </CardContent>
         </Card>

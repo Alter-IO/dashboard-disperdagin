@@ -34,8 +34,6 @@ export const columns = (setOpen: (open: boolean) => void, setSelectedId: (id: st
         header: 'File',
         size: 120,
         cell: ({ row }) => {
-            console.log(row.original.file_url);
-            console.log(endpoint);
             return (
                 <img 
                     src={`${endpoint}${row.original.file_url}`} 
